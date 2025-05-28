@@ -6,56 +6,82 @@
     <title>Minecraft AFK Bot Control</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
+            background: linear-gradient(135deg, #1a1f25 0%, #2b323a 100%);
+            color: #fff;
+            min-height: 100vh;
         }
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .status {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
             text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
         }
         .running {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
         }
         .stopped {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
         }
         .button-container {
             display: flex;
-            gap: 10px;
+            gap: 20px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 30px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        button:hover::after {
+            opacity: 1;
         }
         .start-btn {
-            background-color: #28a745;
+            background: linear-gradient(45deg, #28a745, #34ce57);
             color: white;
         }
         .stop-btn {
-            background-color: #dc3545;
+            background: linear-gradient(45deg, #dc3545, #ff4d5b);
             color: white;
-        }
-        button:hover {
-            opacity: 0.9;
         }
         button:disabled {
             opacity: 0.5;
@@ -63,7 +89,26 @@
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .credits {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
+        }
+        .credits a {
+            color: #4a9eff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .credits a:hover {
+            color: #6fb4ff;
         }
     </style>
 </head>
@@ -74,6 +119,9 @@
         <div class="button-container">
             <button id="startBot" class="start-btn">Start Bot</button>
             <button id="stopBot" class="stop-btn" disabled>Stop Bot</button>
+        </div>
+        <div class="credits">
+            Made with ❤️ by <a href="https://github.com/skipscaped" target="_blank">Skipscaped</a>
         </div>
     </div>
 
