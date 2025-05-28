@@ -5,13 +5,11 @@ const { GoalBlock } = require('mineflayer-pathfinder').goals;
 const config = require('./settings.json');
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 let bot = null;
 
 app.use(express.static('public'));
-app.use(express.json());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -19,23 +17,6 @@ app.get('/', (req, res) => {
 
 app.get('/api/status', (req, res) => {
   res.json({ status: bot ? 'running' : 'stopped' });
-});
-
-app.post('/api/settings', (req, res) => {
-  const { username } = req.body;
-  if (!username) {
-    return res.status(400).json({ success: false, error: 'Username is required' });
-  }
-
-  try {
-    const settings = require('./settings.json');
-    settings['bot-account'].username = username;
-    fs.writeFileSync('./settings.json', JSON.stringify(settings, null, 2));
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error saving settings:', error);
-    res.status(500).json({ success: false, error: 'Failed to save settings' });
-  }
 });
 
 app.post('/api/start', (req, res) => {

@@ -94,40 +94,6 @@
             margin-bottom: 30px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .settings-container {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #fff;
-            font-weight: 500;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 16px;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #4a9eff;
-        }
-        .save-btn {
-            background: linear-gradient(45deg, #4a9eff, #6fb4ff);
-            color: white;
-            width: 100%;
-            margin-top: 10px;
-        }
         .credits {
             text-align: center;
             margin-top: 30px;
@@ -144,44 +110,18 @@
         .credits a:hover {
             color: #6fb4ff;
         }
-        .github-profile {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .github-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Minecraft AFK Bot Control</h1>
         <div id="status" class="status stopped">Bot Status: Stopped</div>
-        
-        <div class="settings-container">
-            <div class="input-group">
-                <label for="username">Bot Username</label>
-                <input type="text" id="username" placeholder="Enter bot username">
-            </div>
-            <button id="saveSettings" class="save-btn">Save Settings</button>
-        </div>
-
         <div class="button-container">
             <button id="startBot" class="start-btn">Start Bot</button>
             <button id="stopBot" class="stop-btn" disabled>Stop Bot</button>
         </div>
-        
         <div class="credits">
-            <div>Made with ❤️ by</div>
-            <div class="github-profile">
-                <img src="https://github.com/SkipScaped.png" alt="SkipScaped">
-                <a href="https://github.com/SkipScaped" target="_blank">SkipScaped</a>
-            </div>
+            Made with ❤️ by <a href="https://github.com/skipscaped" target="_blank">Skipscaped</a>
         </div>
     </div>
 
@@ -189,54 +129,6 @@
         const startBtn = document.getElementById('startBot');
         const stopBtn = document.getElementById('stopBot');
         const statusDiv = document.getElementById('status');
-        const usernameInput = document.getElementById('username');
-        const saveSettingsBtn = document.getElementById('saveSettings');
-
-        // Load saved username from cookies
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = `expires=${date.toUTCString()}`;
-            document.cookie = `${name}=${value};${expires};path=/`;
-        }
-
-        // Load saved username on page load
-        window.addEventListener('load', () => {
-            const savedUsername = getCookie('botUsername');
-            if (savedUsername) {
-                usernameInput.value = savedUsername;
-            }
-        });
-
-        // Save settings
-        saveSettingsBtn.addEventListener('click', async () => {
-            const username = usernameInput.value.trim();
-            if (username) {
-                setCookie('botUsername', username, 365); // Save for 1 year
-                try {
-                    const response = await fetch('/api/settings', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ username })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        alert('Settings saved successfully!');
-                    }
-                } catch (error) {
-                    console.error('Error saving settings:', error);
-                    alert('Failed to save settings. Please try again.');
-                }
-            }
-        });
 
         function updateStatus(running) {
             statusDiv.className = `status ${running ? 'running' : 'stopped'}`;
