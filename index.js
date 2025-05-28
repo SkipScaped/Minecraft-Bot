@@ -216,7 +216,8 @@ function createBot() {
 
    bot.on('error', (err) =>
       console.log(`\x1b[31m[ERROR] ${err.message}`, '\x1b[0m`)
-   );
+         );
+   )
 
    return bot;
 }
