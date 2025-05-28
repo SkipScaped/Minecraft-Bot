@@ -175,9 +175,7 @@ function createBot() {
    if (config.utils['auto-reconnect']) {
       bot.on('end', () => {
          setTimeout(() => {
-            if (bot) {
-               bot = createBot();
-            }
+            bot = createBot();
          }, config.utils['auto-recconect-delay']);
       });
    }
