@@ -110,12 +110,37 @@
         .credits a:hover {
             color: #6fb4ff;
         }
+        .username-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .username-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            width: 200px;
+            margin-right: 10px;
+        }
+        .username-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        .update-btn {
+            background: linear-gradient(45deg, #4a9eff, #6fb4ff);
+            color: white;
+            padding: 10px 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Minecraft AFK Bot Control</h1>
         <div id="status" class="status stopped">Bot Status: Stopped</div>
+        <div class="username-container">
+            <input type="text" id="usernameInput" class="username-input" placeholder="Enter new username">
+            <button id="updateUsername" class="update-btn">Update Username</button>
+        </div>
         <div class="button-container">
             <button id="startBot" class="start-btn">Start Bot</button>
             <button id="stopBot" class="stop-btn" disabled>Stop Bot</button>
@@ -129,6 +154,8 @@
         const startBtn = document.getElementById('startBot');
         const stopBtn = document.getElementById('stopBot');
         const statusDiv = document.getElementById('status');
+        const usernameInput = document.getElementById('usernameInput');
+        const updateUsernameBtn = document.getElementById('updateUsername');
 
         function updateStatus(running) {
             statusDiv.className = `status ${running ? 'running' : 'stopped'}`;
@@ -162,6 +189,33 @@
                 checkStatus();
             } catch (error) {
                 console.error('Error stopping bot:', error);
+            }
+        });
+
+        updateUsernameBtn.addEventListener('click', async () => {
+            const newUsername = usernameInput.value.trim();
+            if (!newUsername) {
+                alert('Please enter a username');
+                return;
+            }
+            try {
+                const response = await fetch('/api/update-username', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: newUsername })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Username updated successfully!');
+                    usernameInput.value = '';
+                } else {
+                    alert('Failed to update username: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error updating username:', error);
+                alert('Failed to update username. Please try again.');
             }
         });
 
