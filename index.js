@@ -5,13 +5,11 @@ const { GoalBlock } = require('mineflayer-pathfinder').goals;
 const config = require('./settings.json');
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 let bot = null;
 
 app.use(express.static('public'));
-app.use(express.json());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -37,30 +35,6 @@ app.post('/api/stop', (req, res) => {
     res.json({ status: 'Bot stopped' });
   } else {
     res.json({ status: 'Bot is not running' });
-  }
-});
-
-app.post('/api/update-username', (req, res) => {
-  const { username } = req.body;
-  if (!username) {
-    return res.json({ success: false, error: 'Username is required' });
-  }
-
-  try {
-    const settingsPath = path.join(__dirname, 'settings.json');
-    const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-    settings['bot-account'].username = username;
-    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-
-    if (bot) {
-      bot.end();
-      bot = createBot();
-    }
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error updating username:', error);
-    res.json({ success: false, error: 'Failed to update username' });
   }
 });
 
@@ -201,7 +175,9 @@ function createBot() {
    if (config.utils['auto-reconnect']) {
       bot.on('end', () => {
          setTimeout(() => {
-            bot = createBot();
+            if (bot) {
+               bot = createBot();
+            }
          }, config.utils['auto-recconect-delay']);
       });
    }
@@ -215,9 +191,8 @@ function createBot() {
    );
 
    bot.on('error', (err) =>
-      console.log(`\x1b[31m[ERROR] ${err.message}`, '\x1b[0m`)
-         );
-   )
+      console.log(`\x1b[31m[ERROR] ${err.message}`, '\x1b[0m')
+   );
 
    return bot;
 }
