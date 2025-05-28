@@ -2,18 +2,44 @@ const mineflayer = require('mineflayer');
 const Movements = require('mineflayer-pathfinder').Movements;
 const pathfinder = require('mineflayer-pathfinder').pathfinder;
 const { GoalBlock } = require('mineflayer-pathfinder').goals;
-
 const config = require('./settings.json');
 const express = require('express');
+const path = require('path');
 
 const app = express();
+let bot = null;
+
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.send('Bot has arrived');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/api/status', (req, res) => {
+  res.json({ status: bot ? 'running' : 'stopped' });
+});
+
+app.post('/api/start', (req, res) => {
+  if (!bot) {
+    bot = createBot();
+    res.json({ status: 'Bot started' });
+  } else {
+    res.json({ status: 'Bot is already running' });
+  }
+});
+
+app.post('/api/stop', (req, res) => {
+  if (bot) {
+    bot.end();
+    bot = null;
+    res.json({ status: 'Bot stopped' });
+  } else {
+    res.json({ status: 'Bot is not running' });
+  }
 });
 
 app.listen(8000, () => {
-  console.log('Server started');
+  console.log('Server started on port 8000');
 });
 
 function createBot() {
@@ -39,15 +65,14 @@ function createBot() {
          console.log(`[Auth] Sent /register command.`);
 
          bot.once('chat', (username, message) => {
-            console.log(`[ChatLog] <${username}> ${message}`); // Log all chat messages
+            console.log(`[ChatLog] <${username}> ${message}`);
 
-            // Check for various possible responses
             if (message.includes('successfully registered')) {
                console.log('[INFO] Registration confirmed.');
                resolve();
             } else if (message.includes('already registered')) {
                console.log('[INFO] Bot was already registered.');
-               resolve(); // Resolve if already registered
+               resolve();
             } else if (message.includes('Invalid command')) {
                reject(`Registration failed: Invalid command. Message: "${message}"`);
             } else {
@@ -63,7 +88,7 @@ function createBot() {
          console.log(`[Auth] Sent /login command.`);
 
          bot.once('chat', (username, message) => {
-            console.log(`[ChatLog] <${username}> ${message}`); // Log all chat messages
+            console.log(`[ChatLog] <${username}> ${message}`);
 
             if (message.includes('successfully logged in')) {
                console.log('[INFO] Login successful.');
@@ -102,12 +127,11 @@ function createBot() {
             let i = 0;
 
             let msg_timer = setInterval(() => {
-               bot.chat(`${messages[i]}`);
-
-               if (i + 1 === messages.length) {
-                  i = 0;
+               if (bot) {
+                  bot.chat(`${messages[i]}`);
+                  i = (i + 1) % messages.length;
                } else {
-                  i++;
+                  clearInterval(msg_timer);
                }
             }, delay * 1000);
          } else {
@@ -151,7 +175,9 @@ function createBot() {
    if (config.utils['auto-reconnect']) {
       bot.on('end', () => {
          setTimeout(() => {
-            createBot();
+            if (bot) {
+               bot = createBot();
+            }
          }, config.utils['auto-recconect-delay']);
       });
    }
@@ -167,6 +193,6 @@ function createBot() {
    bot.on('error', (err) =>
       console.log(`\x1b[31m[ERROR] ${err.message}`, '\x1b[0m')
    );
-}
 
-createBot();
+   return bot;
+}
